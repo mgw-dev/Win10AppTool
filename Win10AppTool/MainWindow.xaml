@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
         ui:ThemeManager.IsThemeAware="True"
-        Title="MainWindow" 
+        Title="Win10AppTool" 
         Height="514" 
         Width="800"
         MinHeight="514"
