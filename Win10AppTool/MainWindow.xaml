@@ -1,7 +1,9 @@
-﻿<Window x:Name="window" x:Class="Win10AppTool.MainWindow"
+﻿<Window x:Name="window" 
+        x:Class="Win10AppTool.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ui="http://schemas.modernwpf.com/2019" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:views = "clr-namespace:Win10AppTool.Views"
         mc:Ignorable="d"
@@ -12,26 +14,24 @@
         Width="800"
         MinHeight="514"
         MinWidth="800"
-        Loaded="MainWindow_Loaded"
-        >
+        Loaded="MainWindow_Loaded">
+
     <Grid Name="gridMain">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="429*"/>
-            <ColumnDefinition Width="371*"/>
+            <ColumnDefinition Width="*" MaxWidth="500"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <views:AppxView x:Name="AppxView" Grid.Row="0" Margin="12,0,0,0" Loaded="AppxView_Loaded"/>
 
-
-        <Button x:Name="btnRefresh" Content="Refresh" Height="32" Margin="12,10,0,0" Click="btnRefresh_Click" VerticalAlignment="Top" Grid.Column="1" Width="120"/>
-        <Button x:Name="btnSelAll" Content="Select All" Height="32" Margin="12,50,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnSelAll_Click"/>
-        <Button x:Name="btnInvSel" Content="Invert Selection" Height="32" Margin="12,90,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnInvSel_Click"/>
-
+        <views:AppxView x:Name="MainAppxView" Grid.Row="0" HorizontalAlignment="Stretch" Margin="12,0,12,0" Loaded="MainAppxView_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" /> 
+        
+        <Button x:Name="btnRefresh" Content="Refresh" Height="32" Margin="12,10,0,0" Click="btnRefresh_Click" VerticalAlignment="Top" Grid.Column="1" Width="120" HorizontalAlignment="Left"/>
+        <Button x:Name="btnSelAll" Content="Select All" Height="32" Margin="12,50,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnSelAll_Click" HorizontalAlignment="Left"/>
+        <Button x:Name="btnInvSel" Content="Invert Selection" Height="32" Margin="12,90,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnInvSel_Click" HorizontalAlignment="Left"/>
+        
         <CheckBox x:Name="cbStore" Content="Exclude Windows Store" Margin="12,130,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true"/>
         <CheckBox x:Name="cbAllUsers" Content="All Users" Margin="12,160,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTip="Delete apps for all users."/>
         <CheckBox x:Name="cbOnline" Content="Include Online Provisioned Apps" Margin="12,190,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTip="Apps that are downloaded automatically for each new user." />
-
+        
         <Button x:Name="btnDel" Content="Delete Selected Apps" Height="32" Margin="0,0,12,12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="1" Width="220" Click="btnDel_Click"/>
-
-
     </Grid>
 </Window>

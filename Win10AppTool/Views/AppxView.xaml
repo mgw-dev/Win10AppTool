@@ -6,26 +6,21 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <ScrollViewer 
-                Grid.Row="0"
-                Margin="0,0,0,0"
-                Height="Auto"
-                Width="Auto"
-                VerticalScrollBarVisibility="Auto" 
-                HorizontalScrollBarVisibility="Auto" 
-                HorizontalAlignment="Left">
-            <ItemsControl ItemsSource = "{Binding Path = apps}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation = "Horizontal">
-                            <CheckBox IsChecked="{Binding Path = Remove, Mode=TwoWay}">
-                                <TextBlock Text = "{Binding Path = Name}"/>
-                            </CheckBox>
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-    </Grid>
+    <ScrollViewer 
+            Margin="0,0,0,0"
+            VerticalScrollBarVisibility="Auto" 
+            HorizontalScrollBarVisibility="Hidden" 
+            >
+        <ItemsControl ItemsSource = "{Binding Path = apps}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation = "Horizontal">
+                        <CheckBox IsChecked="{Binding Path = Remove, Mode=TwoWay}">
+                            <TextBlock Text = "{Binding Path = Name}"/>
+                        </CheckBox>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
 </UserControl>

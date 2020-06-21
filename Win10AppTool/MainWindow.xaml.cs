@@ -1,23 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using Win10AppTool.Model;
 using Win10AppTool.ViewModel;
+
 
 namespace Win10AppTool
 {
@@ -34,7 +18,7 @@ namespace Win10AppTool
 
         private AppxViewModel appxViewModel;
 
-        private void AppxView_Loaded(object sender, RoutedEventArgs e)
+        private void MainAppxView_Loaded(object sender, RoutedEventArgs e)
         {
             LoadApps();
         }
@@ -53,7 +37,7 @@ namespace Win10AppTool
                 appxViewModel.LoadAppxOnline();
             }
 
-            AppxView.DataContext = appxViewModel;
+            MainAppxView.DataContext = appxViewModel;
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
@@ -63,23 +47,19 @@ namespace Win10AppTool
 
         private void btnSelAll_Click(object sender, RoutedEventArgs e)
         {
-            if (appxViewModel != null)
+            if (appxViewModel == null) return;
+            foreach (Appx app in appxViewModel.apps)
             {
-                for (int i = 0; i < appxViewModel.apps.Count; i++)
-                {
-                    appxViewModel.apps[i].Remove = true;
-                }
+                app.Remove = true;
             }
         }
 
         private void btnInvSel_Click(object sender, RoutedEventArgs e)
         {
-            if (appxViewModel != null)
+            if (appxViewModel == null) return;
+            foreach (Appx app in appxViewModel.apps)
             {
-                foreach (var appx in appxViewModel.apps)
-                {
-                    appx.Remove = !appx.Remove;
-                }
+                app.Remove = !app.Remove;
             }
         }
 

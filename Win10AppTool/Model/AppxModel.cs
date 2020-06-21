@@ -56,7 +56,7 @@ namespace Win10AppTool.Model
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public int CompareTo(object? obj)
+        public int CompareTo(object obj)
         {
             Appx other = (Appx)obj;
             return String.CompareOrdinal(this.Name, other?.name);
