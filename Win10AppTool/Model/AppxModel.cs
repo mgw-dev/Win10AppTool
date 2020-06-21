@@ -1,9 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Win10AppTool.Model
 {
-    public class Appx : INotifyPropertyChanged
+    public class Appx : INotifyPropertyChanged, IComparable
     {
         private string name;
         private string fullName;
@@ -55,5 +56,11 @@ namespace Win10AppTool.Model
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        public int CompareTo(object? obj)
+        {
+            Appx other = (Appx)obj;
+            return String.CompareOrdinal(this.Name, other?.name);
+        }
     }
+
 }
