@@ -35,10 +35,10 @@ namespace Win10AppTool
         private void LoadApps()
         {
             appxViewModel = new AppxViewModel();
-            appxViewModel.LoadAppx(cbAllUsers.IsChecked == true);
+            appxViewModel.LoadAppx(cbAllUsers.IsChecked == true, cbExclStore.IsChecked == true);
             if (cbOnline.IsChecked == true)
             {
-                appxViewModel.LoadAppxOnline();
+                appxViewModel.LoadAppxOnline(cbExclStore.IsChecked == true);
             }
 
             MainAppxView.DataContext = appxViewModel;

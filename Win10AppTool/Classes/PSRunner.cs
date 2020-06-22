@@ -42,36 +42,69 @@ namespace Win10AppTool.Classes
                 (true, false, true) => $"Remove-AppxPackage {app.FullName} -AllUsers"
             };
 
-        public static IEnumerable<Appx> LoadAppx(bool allUsers)
+        /// <summary>
+        /// Uses PowerShell to get list of Appx Packages.
+        /// </summary>
+        /// <param name="allUsers"></param>
+        /// <returns></returns>
+        public static IEnumerable<Appx> LoadAppx(bool allUsers, bool noStore)
         {
+            List<Appx> apps = new List<Appx>();
             StringBuilder argsBuilder = new StringBuilder();
             argsBuilder.Append("Get-AppxPackage");
             if (allUsers)
             {
                 argsBuilder.Append(" -AllUsers");
             }
-
-            
-            argsBuilder.Append(" | Where-Object {$_.IsFramework -Match 'false' -and $_.NonRemovable -Match 'false'} | select-object -property @{N='Name';E={$_.Name}}, @{N='FullName';E={$_.PackageFullName}}, @{N='InstallLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$false}} | ConvertTo-Json");
+            argsBuilder.Append(" | Where-Object {$_.IsFramework -Match 'false' -and $_.NonRemovable -Match 'false'} | select-object -property @{N='Name';E={$_.Name}}, @{N='FullName';E={$_.PackageFullName}}, @{N='InstallLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$false}}");
+            if (noStore)
+            {
+                argsBuilder.Append("| Where-Object {$_.Name -NotLike '*Microsoft.WindowsStore*' -and $_.Name -NotLike '*Microsoft.StorePurchaseApp*'}");
+            }
+            argsBuilder.Append(" | ConvertTo-Json");
             string output = RunPsCommand(argsBuilder.ToString());
             if (output.Length > 0)
             {
-                return JsonSerializer.Deserialize<Appx[]>(output);
+                apps = JsonSerializer.Deserialize<List<Appx>>(output);
             }
-
-            return new List<Appx>();
+            apps.Sort();
+            return apps;
         }
 
-        public static IEnumerable<Appx> LoadAppxOnline()
+        /// <summary>
+        /// Uses PowerShell to get list of online Appx Packages.
+        /// </summary>
+        /// <param name="allUsers"></param>
+        /// <returns></returns>
+        public static IEnumerable<Appx> LoadAppxOnline(bool noStore)
         {
-            string output = RunPsCommand("Get-AppxProvisionedPackage -Online | select-object -property @{N='Name';E={'(Online) ' + $_.DisplayName}}, @{N='FullName';E={$_.PackageName}}, @{N='installLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$true}} | ConvertTo-Json");
+            List<Appx> apps = new List<Appx>();
+            StringBuilder argsBuilder = new StringBuilder();
+            
+            argsBuilder.Append("Get-AppxProvisionedPackage -Online | select-object -property @{N='Name';E={'(Online) ' + $_.DisplayName}}, @{N='FullName';E={$_.PackageName}}, @{N='installLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$true}} ");
+            if (noStore)
+            {
+                argsBuilder.Append("| Where-Object {$_.Name -NotLike '*Microsoft.WindowsStore*' -and $_.Name -NotLike '*Microsoft.StorePurchaseApp*'}");
+            }
+
+            argsBuilder.Append("| ConvertTo-Json");
+
+            string args = argsBuilder.ToString();
+
+            string output = RunPsCommand(args);
             if (output.Length > 0)
             {
-                return JsonSerializer.Deserialize<Appx[]>(output);
+                apps = JsonSerializer.Deserialize<List<Appx>>(output);
             }
-            return new List<Appx>();
+            apps.Sort();
+            return apps;
         }
 
+        /// <summary>
+        /// Runs a PowerShell command. 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         private static string RunPsCommand(string command)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();

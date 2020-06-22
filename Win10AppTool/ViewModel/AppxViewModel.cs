@@ -15,19 +15,19 @@ namespace Win10AppTool.ViewModel
             apps ??= new ObservableCollection<Appx>();
         }
 
-        public void LoadAppx(bool allUsers)
+        public void LoadAppx(bool allUsers, bool noStore)
         {
             InitApps();
-            foreach (Appx appx in PSRunner.LoadAppx(allUsers))
+            foreach (Appx appx in PSRunner.LoadAppx(allUsers, noStore))
             {
                 apps.Add(appx);
             }
         }
 
-        public void LoadAppxOnline()
+        public void LoadAppxOnline(bool noStore)
         {
             InitApps();
-            foreach (Appx appx in PSRunner.LoadAppxOnline())
+            foreach (Appx appx in PSRunner.LoadAppxOnline(noStore))
             {
                 apps.Add(appx);
             }

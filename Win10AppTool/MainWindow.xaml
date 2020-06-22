@@ -28,7 +28,7 @@
         <Button x:Name="btnSelAll" Content="Select All" Height="32" Margin="12,50,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnSelAll_Click" HorizontalAlignment="Left"/>
         <Button x:Name="btnInvSel" Content="Invert Selection" Height="32" Margin="12,90,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnInvSel_Click" HorizontalAlignment="Left"/>
         
-        <CheckBox x:Name="cbStore" Content="Exclude Windows Store" Margin="12,130,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true"/>
+        <CheckBox x:Name="cbExclStore" Content="Exclude Windows Store" Margin="12,130,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true"/>
         <CheckBox x:Name="cbAllUsers" Content="All Users" Margin="12,160,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Delete apps for all users."/>
         <CheckBox x:Name="cbOnline" Content="Include Online Provisioned Apps" Margin="12,190,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Apps that are downloaded automatically for each new user." />
 
