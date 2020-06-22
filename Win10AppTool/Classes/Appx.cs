@@ -1,16 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.Json.Serialization;
 
-namespace Win10AppTool.Model
+namespace Win10AppTool.Classes
 {
     public class Appx : INotifyPropertyChanged, IComparable
     {
+       
         private string name;
         private string fullName;
-        private bool remove;
+        private string installLocation;
         private bool onlineProvisioned;
+        private bool remove;
 
+        [JsonPropertyName("Name")]
         public string Name
         {
             get => name;
@@ -21,6 +27,7 @@ namespace Win10AppTool.Model
             }
         }
 
+        [JsonPropertyName("FullName")]
         public string FullName
         {
             get => fullName;
@@ -28,6 +35,18 @@ namespace Win10AppTool.Model
             {
                 fullName = value;
                 OnPropertyChanged("FullName");
+            }
+        }
+
+
+        [JsonPropertyName("InstallLocation")]
+        public string InstallLocation
+        {
+            get => installLocation;
+            set
+            {
+                installLocation = value;
+                OnPropertyChanged("InstallLocation");
             }
         }
 
@@ -41,6 +60,7 @@ namespace Win10AppTool.Model
             }
         }
 
+        [JsonPropertyName("OnlineProvisioned")]
         public bool OnlineProvisioned
         {
             get => onlineProvisioned;
@@ -62,5 +82,4 @@ namespace Win10AppTool.Model
             return String.CompareOrdinal(this.Name, other?.name);
         }
     }
-
 }

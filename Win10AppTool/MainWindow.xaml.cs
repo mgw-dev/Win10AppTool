@@ -1,5 +1,8 @@
-﻿using System.Windows;
-using Win10AppTool.Model;
+﻿using System;
+using System.Security.Principal;
+using System.Windows;
+using System.Windows.Controls;
+using Win10AppTool.Classes;
 using Win10AppTool.ViewModel;
 
 
@@ -20,18 +23,19 @@ namespace Win10AppTool
 
         private void MainAppxView_Loaded(object sender, RoutedEventArgs e)
         {
+            AdminCheck();
             LoadApps();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         private void LoadApps()
         {
             appxViewModel = new AppxViewModel();
-            appxViewModel.LoadAppx(cbAllUsers.IsChecked);
+            appxViewModel.LoadAppx(cbAllUsers.IsChecked == true);
             if (cbOnline.IsChecked == true)
             {
                 appxViewModel.LoadAppxOnline();
@@ -68,5 +72,26 @@ namespace Win10AppTool
             PSRunner.RemoveAppx(appxViewModel.apps, cbAllUsers.IsChecked == true);
             LoadApps();
         }
+
+        // Disable controls if not admin
+        private void AdminCheck()
+        {
+            using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
+            {
+                cbAllUsers.IsChecked = false;
+                cbOnline.IsChecked = false;
+
+                Control[] conts = { cbAllUsers, cbOnline, btnDel };
+
+                foreach (Control cont in conts)
+                {
+                    cont.IsEnabled = false;
+                    cont.ToolTip = "You must run this program with administrator privileges to use this feature.";
+                }
+            }
+        }
+
     }
 }

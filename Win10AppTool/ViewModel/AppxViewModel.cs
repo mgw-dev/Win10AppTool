@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Win10AppTool.Model;
+using Win10AppTool.Classes;
 
 namespace Win10AppTool.ViewModel
 {
@@ -15,7 +15,7 @@ namespace Win10AppTool.ViewModel
             apps ??= new ObservableCollection<Appx>();
         }
 
-        public void LoadAppx(bool? allUsers)
+        public void LoadAppx(bool allUsers)
         {
             InitApps();
             foreach (Appx appx in PSRunner.LoadAppx(allUsers))

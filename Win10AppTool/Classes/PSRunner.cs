@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Management.Automation;
-using Win10AppTool.Model;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
 
-namespace Win10AppTool
+namespace Win10AppTool.Classes
 {
     public static class PSRunner
     {
@@ -14,13 +17,14 @@ namespace Win10AppTool
         /// <param name="allUsers">Remove for all users</param>
         public static void RemoveAppx(IEnumerable<Appx> apps, bool allUsers)
         {
-            using PowerShell psInstance = PowerShell.Create();
-            foreach (Appx appx in apps)
+            foreach (Appx app in apps)
             {
-                string comm = GetRemovalCommand(appx, allUsers);
-                psInstance.AddScript(comm);
+                string c = GetRemovalCommand(app, allUsers);
+                if (!string.IsNullOrEmpty(c))
+                {
+                    RunPsCommand(c);
+                }
             }
-            psInstance.Invoke();
         }
 
         /// <summary>
@@ -34,63 +38,52 @@ namespace Win10AppTool
             {
                 (false, _, _) => "",
                 (true, true, _) => $"Remove-AppxProvisionedPackage {app.FullName} -Online",
-                (true, false, false) => $"Remove-AppxPackage -Package {app.FullName}",
-                (true, false, true) => $"Remove-AppxPackage -Package {app.FullName} -AllUsers"
+                (true, false, false) => $"Remove-AppxPackage {app.FullName}",
+                (true, false, true) => $"Remove-AppxPackage {app.FullName} -AllUsers"
             };
 
-        public static IEnumerable<Appx> LoadAppx(bool? allUsers)
+        public static IEnumerable<Appx> LoadAppx(bool allUsers)
         {
-            List<Appx> apps = new List<Appx>();
-            using PowerShell psInstance = PowerShell.Create();
-            if (allUsers == true)
+            StringBuilder argsBuilder = new StringBuilder();
+            argsBuilder.Append("Get-AppxPackage");
+            if (allUsers)
             {
-                psInstance.AddScript("Get-AppxPackage");
+                argsBuilder.Append(" -AllUsers");
             }
-            else
-            {
-                psInstance.AddScript("Get-AppxPackage -AllUsers");
-            }
-            IEnumerable<PSObject> results = psInstance.Invoke();
-            foreach (PSObject result in results)
-            {
-                bool isFramework = Convert.ToBoolean(result.Properties["IsFramework"].Value);
-                bool nonRemovable = Convert.ToBoolean(result.Properties["NonRemovable"].Value);
-                if (!isFramework && !nonRemovable)
-                {
-                    Appx tmp = new Appx
-                    {
-                        Name = result.Properties["Name"].Value.ToString(),
-                        FullName = result.Properties["PackageFullName"].Value.ToString(),
-                        Remove = false,
-                        OnlineProvisioned = false
-                    };
 
-                    apps.Add(tmp);
-                }
+            
+            argsBuilder.Append(" | Where-Object {$_.IsFramework -Match 'false' -and $_.NonRemovable -Match 'false'} | select-object -property @{N='Name';E={$_.Name}}, @{N='FullName';E={$_.PackageFullName}}, @{N='InstallLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$false}} | ConvertTo-Json");
+            string output = RunPsCommand(argsBuilder.ToString());
+            if (output.Length > 0)
+            {
+                return JsonSerializer.Deserialize<Appx[]>(output);
             }
-            apps.Sort();
-            return apps;
+
+            return new List<Appx>();
         }
 
         public static IEnumerable<Appx> LoadAppxOnline()
         {
-            List<Appx> apps = new List<Appx>();
-            using PowerShell psInstance = PowerShell.Create();
-            psInstance.AddScript($"Get-AppxProvisionedPackage -Online");
-            IEnumerable<PSObject> results = psInstance.Invoke();
-            foreach (PSObject result in results)
+            string output = RunPsCommand("Get-AppxProvisionedPackage -Online | select-object -property @{N='Name';E={'(Online) ' + $_.DisplayName}}, @{N='FullName';E={$_.PackageName}}, @{N='installLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$true}} | ConvertTo-Json");
+            if (output.Length > 0)
             {
-                Appx tmp = new Appx
-                {
-                    Name = $"(Online) {result.Properties["DisplayName"].Value}",
-                    FullName = result.Properties["PackageName"].Value.ToString(),
-                    Remove = false,
-                    OnlineProvisioned = true
-                };
-                apps.Add(tmp);
+                return JsonSerializer.Deserialize<Appx[]>(output);
             }
-            apps.Sort();
-            return apps;
+            return new List<Appx>();
+        }
+
+        private static string RunPsCommand(string command)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = @"powershell.exe";
+            startInfo.Arguments = $"& {command}";
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            Process process = new Process {StartInfo = startInfo};
+            process.Start();
+            return process.StandardOutput.ReadToEnd();
         }
 
     }
