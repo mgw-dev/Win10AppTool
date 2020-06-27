@@ -115,13 +115,20 @@ namespace Win10AppTool.Classes
                     doc.Load(path);
                     XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
                     nsmgr.AddNamespace("appx", "http://schemas.microsoft.com/appx/manifest/foundation/windows10");
+                    nsmgr.AddNamespace("appx2", "http://schemas.microsoft.com/appx/2010/manifest");
 
                     string lPath = doc.SelectSingleNode("//appx:Logo", nsmgr)?.InnerText;
                     string friendlyName = doc.SelectSingleNode("//appx:DisplayName", nsmgr)?.InnerText;
+                    lPath ??= doc.SelectSingleNode("//appx2:Logo", nsmgr)?.InnerText;
+                    friendlyName ??= doc.SelectSingleNode("//appx2:DisplayName", nsmgr)?.InnerText;
 
                     if (friendlyName != null && !friendlyName.StartsWith("ms-resource:"))
                     {
                         name = friendlyName;
+                    }
+                    else
+                    {
+                        name = ParseName(name);
                     }
 
                     if (lPath != null)
@@ -132,16 +139,25 @@ namespace Win10AppTool.Classes
                         string imgPath = Directory.GetFiles(searchPath, searchPattern)[0];
                         img.Source = (new ImageSourceConverter()).ConvertFromString(imgPath) as ImageSource;
                     }
-                    else
+                    else // No logo found, use placeholder.
                     {
                         img.Source = (new ImageSourceConverter()).ConvertFromString("pack://application:,,,/Win10AppTool;component/Resources/Image.png") as ImageSource;
                     }
                 }
             }
-            else
+            else // Online apps do include an icon to load. So a placeholder is used.
             {
                 img.Source = (new ImageSourceConverter()).ConvertFromString("pack://application:,,,/Win10AppTool;component/Resources/Cloud.png") as ImageSource;
+                name = ParseName(name);
             }
         }
+
+        private string ParseName(string oldName)
+        {
+            string newName = oldName.Replace("Microsoft.", "").Replace("Windows.", "");
+            newName = System.Text.RegularExpressions.Regex.Replace(newName, "(^[a-z]+|[A-Z]+(?![a-z])|[A-Z][a-z]+)", " $1", System.Text.RegularExpressions.RegexOptions.Compiled).Trim();
+            return newName;
+        }
+
     }
 }
