@@ -100,7 +100,9 @@ namespace Win10AppTool.Classes
             Appx other = (Appx)obj;
             return String.CompareOrdinal(this.Name, other?.name);
         }
-
+        /// <summary>
+        /// Loads information like more user-readable names and image locations from an app's AppxManifest.xml file.
+        /// </summary>
         public void LoadXML()
         {
             img = new Image();
@@ -111,7 +113,7 @@ namespace Win10AppTool.Classes
                 {
                     XmlDocument doc = new XmlDocument();
                     doc.Load(path);
-                    var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                    XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
                     nsmgr.AddNamespace("appx", "http://schemas.microsoft.com/appx/manifest/foundation/windows10");
 
                     string lPath = doc.SelectSingleNode("//appx:Logo", nsmgr)?.InnerText;
