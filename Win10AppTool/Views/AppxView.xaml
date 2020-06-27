@@ -15,8 +15,14 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation = "Horizontal">
-                        <CheckBox IsChecked="{Binding Path = Remove, Mode=TwoWay}">
-                            <TextBlock Text = "{Binding Path = Name}"/>
+                        <Image Margin="0,0,12,0" Width="20" Height="20">
+                            <Image.Source>
+                                <BitmapImage DecodePixelWidth="20" DecodePixelHeight="20"
+                                             UriSource="{Binding Path= ImgPath}" />
+                            </Image.Source>
+                        </Image>
+                        <CheckBox Margin="0,0,0,0" IsChecked="{Binding Path = Remove, Mode=TwoWay}">
+                            <TextBlock Margin="0,0,0,0" Text = "{Binding Path = Name}"/>
                         </CheckBox>
                     </StackPanel>
                 </DataTemplate>

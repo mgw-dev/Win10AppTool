@@ -69,7 +69,7 @@ namespace Win10AppTool
 
         private void btnDel_Click(object sender, RoutedEventArgs e)
         {
-            PSRunner.RemoveAppx(appxViewModel.apps, cbAllUsers.IsChecked == true);
+            PSRunner.RemoveAppx(appxViewModel.apps);
             LoadApps();
         }
 

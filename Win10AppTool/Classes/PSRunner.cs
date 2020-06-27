@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace Win10AppTool.Classes
 {
@@ -15,13 +17,14 @@ namespace Win10AppTool.Classes
         /// </summary>
         /// <param name="apps">Collection of packages to remove</param>
         /// <param name="allUsers">Remove for all users</param>
-        public static void RemoveAppx(IEnumerable<Appx> apps, bool allUsers)
+        public static void RemoveAppx(IEnumerable<Appx> apps)
         {
             foreach (Appx app in apps)
             {
-                string c = GetRemovalCommand(app, allUsers);
+                string c = GetRemovalCommand(app);
                 if (!string.IsNullOrEmpty(c))
                 {
+                    Clipboard.SetText(c);
                     RunPsCommand(c);
                 }
             }
@@ -33,13 +36,12 @@ namespace Win10AppTool.Classes
         /// <param name="app"></param>
         /// <param name="allUsers"></param>
         /// <returns></returns>
-        private static string GetRemovalCommand(Appx app, bool allUsers) =>
-            (app.Remove, app.OnlineProvisioned, allUsers) switch
+        private static string GetRemovalCommand(Appx app) =>
+            (app.Remove, app.OnlineProvisioned) switch
             {
-                (false, _, _) => "",
-                (true, true, _) => $"Remove-AppxProvisionedPackage {app.FullName} -Online",
-                (true, false, false) => $"Remove-AppxPackage {app.FullName}",
-                (true, false, true) => $"Remove-AppxPackage {app.FullName} -AllUsers"
+                (false, _) => "",
+                (true, true) => $"Remove-AppxProvisionedPackage {app.FullName} -Online",
+                (true, false) => $"Remove-AppxPackage {app.FullName}"
             };
 
         /// <summary>
@@ -108,13 +110,13 @@ namespace Win10AppTool.Classes
         private static string RunPsCommand(string command)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = @"powershell.exe";
-            startInfo.Arguments = $"& {command}";
+            startInfo.FileName = "powershell.exe";
+            startInfo.Arguments = command;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
-            Process process = new Process {StartInfo = startInfo};
+            Process process = new Process { StartInfo = startInfo };
             process.Start();
             return process.StandardOutput.ReadToEnd();
         }
