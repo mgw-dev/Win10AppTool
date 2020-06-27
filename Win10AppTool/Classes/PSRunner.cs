@@ -83,7 +83,7 @@ namespace Win10AppTool.Classes
             List<Appx> apps = new List<Appx>();
             StringBuilder argsBuilder = new StringBuilder();
             
-            argsBuilder.Append("Get-AppxProvisionedPackage -Online | select-object -property @{N='Name';E={'(Online) ' + $_.DisplayName}}, @{N='FullName';E={$_.PackageName}}, @{N='installLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$true}} ");
+            argsBuilder.Append("Get-AppxProvisionedPackage -Online | select-object -property @{N='Name';E={$_.DisplayName}}, @{N='FullName';E={$_.PackageName}}, @{N='installLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$true}} ");
             if (noStore)
             {
                 argsBuilder.Append("| Where-Object {$_.Name -NotLike '*Microsoft.WindowsStore*' -and $_.Name -NotLike '*Microsoft.StorePurchaseApp*'}");

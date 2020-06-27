@@ -4,8 +4,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -13,18 +17,17 @@ namespace Win10AppTool.Classes
 {
     public class Appx : INotifyPropertyChanged, IComparable
     {
-       
         private string name;
         private string fullName;
         private string installLocation;
-        private string imgPath;
+        private Image img;
         private bool onlineProvisioned;
         private bool remove;
 
         [JsonPropertyName("Name")]
         public string Name
         {
-            get => name;
+            get => OnlineProvisioned ? "(Online) " + name : name;
             set
             {
                 name = value;
@@ -76,13 +79,13 @@ namespace Win10AppTool.Classes
             }
         }
 
-        public string ImgPath
+        public Image Img
         {
-            get => imgPath;
+            get => img;
             set
             {
-                imgPath = value;
-                OnPropertyChanged("ImgPath");
+                img = value;
+                OnPropertyChanged("Img");
             }
         }
 
@@ -98,33 +101,44 @@ namespace Win10AppTool.Classes
             return String.CompareOrdinal(this.Name, other?.name);
         }
 
-        public void LoadImg()
+        public void LoadXML()
         {
-            string path = $"{installLocation}\\AppxManifest.xml";
-            if (Directory.Exists(installLocation) && File.Exists(path))
+            img = new Image();
+            if (!OnlineProvisioned)
             {
-                XmlDocument doc = new XmlDocument();
-                doc.Load(path);
-                var nsmgr = new XmlNamespaceManager(doc.NameTable);
-                nsmgr.AddNamespace("appx", "http://schemas.microsoft.com/appx/manifest/foundation/windows10");
-                string lPath = doc.SelectSingleNode("//appx:Logo", nsmgr)?.InnerText;
-
-                if (lPath != null)
+                string path = $"{installLocation}\\AppxManifest.xml";
+                if (Directory.Exists(installLocation) && File.Exists(path))
                 {
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load(path);
+                    var nsmgr = new XmlNamespaceManager(doc.NameTable);
+                    nsmgr.AddNamespace("appx", "http://schemas.microsoft.com/appx/manifest/foundation/windows10");
 
-                    string searchPath = "";
-                    string searchPattern = "";
+                    string lPath = doc.SelectSingleNode("//appx:Logo", nsmgr)?.InnerText;
+                    string friendlyName = doc.SelectSingleNode("//appx:DisplayName", nsmgr)?.InnerText;
 
-                    int index = lPath.LastIndexOf('\\');
-                    searchPath = $"{installLocation}\\{lPath.Substring(0, index)}";
-                    searchPattern = lPath.Substring(index + 1).Replace(".", "*.");
+                    if (friendlyName != null && !friendlyName.StartsWith("ms-resource:"))
+                    {
+                        name = friendlyName;
+                    }
 
-                    imgPath = Directory.GetFiles(searchPath, searchPattern)[0];
+                    if (lPath != null)
+                    {
+                        int index = lPath.LastIndexOf('\\');
+                        string searchPath = $"{installLocation}\\{lPath.Substring(0, index)}";
+                        string searchPattern = lPath.Substring(index + 1).Replace(".", "*.");
+                        string imgPath = Directory.GetFiles(searchPath, searchPattern)[0];
+                        img.Source = (new ImageSourceConverter()).ConvertFromString(imgPath) as ImageSource;
+                    }
+                    else
+                    {
+                        img.Source = (new ImageSourceConverter()).ConvertFromString("pack://application:,,,/Win10AppTool;component/Resources/Image.png") as ImageSource;
+                    }
                 }
-                else
-                {
-                    imgPath = "C:\\Mark.PNG";
-                }
+            }
+            else
+            {
+                img.Source = (new ImageSourceConverter()).ConvertFromString("pack://application:,,,/Win10AppTool;component/Resources/Cloud.png") as ImageSource;
             }
         }
     }
