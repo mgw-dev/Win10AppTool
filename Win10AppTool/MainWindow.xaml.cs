@@ -21,6 +21,8 @@ namespace Win10AppTool
 
         private AppxViewModel appxViewModel;
 
+        public int appCount => appxViewModel.apps.Count;
+
         private void MainAppxView_Loaded(object sender, RoutedEventArgs e)
         {
             AdminCheck();
@@ -42,6 +44,8 @@ namespace Win10AppTool
             }
 
             MainAppxView.DataContext = appxViewModel;
+
+            tbCount.Text = $"Apps found: {appxViewModel.apps.Count}";
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
