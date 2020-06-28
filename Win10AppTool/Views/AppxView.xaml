@@ -15,7 +15,9 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="0,0,0,8"  Orientation = "Horizontal">
-                        <Image Margin="0,0,12,0" Width="32" Height="32" Source="{Binding Img.Source}"/>
+                        <Border Margin="0,0,12,0" Height="32" Width="32" Background="{DynamicResource AccentButtonBackground}">
+                            <Image Stretch="Fill" Source="{Binding Img.Source}"/>
+                        </Border>
                         <CheckBox Margin="0,0,0,0" IsChecked="{Binding Path = Remove, Mode=TwoWay}">
                             <TextBlock Margin="0,0,0,0" Text = "{Binding Path = Name}"/>
                         </CheckBox>

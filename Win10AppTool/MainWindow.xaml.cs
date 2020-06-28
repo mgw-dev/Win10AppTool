@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using Win10AppTool.Classes;
 using Win10AppTool.ViewModel;
 
-
 namespace Win10AppTool
 {
 
@@ -14,14 +13,14 @@ namespace Win10AppTool
     /// </summary>
     public partial class MainWindow : Window
     {
+        
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
         private AppxViewModel appxViewModel;
-
-        public int appCount => appxViewModel.apps.Count;
 
         private void MainAppxView_Loaded(object sender, RoutedEventArgs e)
         {
@@ -33,6 +32,7 @@ namespace Win10AppTool
         {
             
         }
+
 
         private void LoadApps()
         {
@@ -96,6 +96,5 @@ namespace Win10AppTool
                 }
             }
         }
-
     }
 }
