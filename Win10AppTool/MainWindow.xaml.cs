@@ -14,7 +14,7 @@ namespace Win10AppTool
     /// </summary>
     public partial class MainWindow : Window
     {
-        
+
 
         public MainWindow()
         {
@@ -31,7 +31,7 @@ namespace Win10AppTool
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
 
