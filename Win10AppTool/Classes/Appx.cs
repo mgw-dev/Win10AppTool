@@ -15,7 +15,7 @@ using System.Xml.Linq;
 
 namespace Win10AppTool.Classes
 {
-    public class Appx : INotifyPropertyChanged, IComparable
+    public class Appx : INotifyPropertyChanged
     {
         private string name;
         private string fullName;
@@ -95,11 +95,6 @@ namespace Win10AppTool.Classes
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public int CompareTo(object obj)
-        {
-            Appx other = (Appx)obj;
-            return String.CompareOrdinal(this.Name, other?.name);
-        }
         /// <summary>
         /// Loads information like more user-readable names and image locations from an app's AppxManifest.xml file.
         /// </summary>
