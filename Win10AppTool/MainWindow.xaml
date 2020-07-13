@@ -16,18 +16,18 @@
         MinWidth="800"
         Loaded="MainWindow_Loaded">
 
-        <Grid Name="gridMain">
+    <Grid Name="gridMain">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MaxWidth="800" MinWidth="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <views:AppxView x:Name="MainAppxView" Grid.Column="0" HorizontalAlignment="Stretch" Margin="12,0,12,0" Loaded="MainAppxView_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" /> 
-        
+        <views:AppxView x:Name="MainAppxView" Grid.Column="0" HorizontalAlignment="Stretch" Margin="12,0,12,0" Loaded="MainAppxView_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
+
         <Button x:Name="btnRefresh" Content="Refresh" Height="32" Margin="12,10,0,0" Click="btnRefresh_Click" VerticalAlignment="Top" Grid.Column="1" Width="120" HorizontalAlignment="Left"/>
         <Button x:Name="btnSelAll" Content="Select All" Height="32" Margin="12,50,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnSelAll_Click" HorizontalAlignment="Left"/>
         <Button x:Name="btnInvSel" Content="Invert Selection" Height="32" Margin="12,90,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnInvSel_Click" HorizontalAlignment="Left"/>
-        
+
         <CheckBox x:Name="cbExclStore" Content="Exclude Windows Store" Margin="12,130,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true"/>
         <CheckBox x:Name="cbAllUsers" Content="All Users" Margin="12,160,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Delete apps for all users."/>
         <CheckBox x:Name="cbOnline" Content="Include Online Provisioned Apps" Margin="12,190,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Apps that are downloaded automatically for each new user." />
@@ -36,5 +36,5 @@
 
         <TextBlock x:Name="tbCount" Margin="12,0,0,16" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1"/>
 
-        </Grid>
+    </Grid>
 </Window>

@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using System.Windows;
 using System.Windows.Controls;
+using ModernWpf.Controls;
 using Win10AppTool.Classes;
 using Win10AppTool.ViewModel;
 
@@ -71,10 +72,21 @@ namespace Win10AppTool
             }
         }
 
-        private void btnDel_Click(object sender, RoutedEventArgs e)
+        private async void btnDel_Click(object sender, RoutedEventArgs e)
         {
-            PSRunner.RemoveAppx(appxViewModel.apps);
-            LoadApps();
+            ContentDialog cd = new ContentDialog
+            {
+                Title = "Warning!",
+                Content = "Removing pre-installed applications may cause errors. Are you sure you want to do this?",
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "No"
+            };
+            ContentDialogResult result = await cd.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                PSRunner.RemoveAppx(appxViewModel.apps);
+                LoadApps();
+            }
         }
 
         // Disable controls if not admin

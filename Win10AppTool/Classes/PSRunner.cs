@@ -24,7 +24,6 @@ namespace Win10AppTool.Classes
                 string c = GetRemovalCommand(app);
                 if (!string.IsNullOrEmpty(c))
                 {
-                    Clipboard.SetText(c);
                     RunPsCommand(c);
                 }
             }
@@ -82,17 +81,13 @@ namespace Win10AppTool.Classes
         {
             List<Appx> apps = new List<Appx>();
             StringBuilder argsBuilder = new StringBuilder();
-            
             argsBuilder.Append("Get-AppxProvisionedPackage -Online | select-object -property @{N='Name';E={$_.DisplayName}}, @{N='FullName';E={$_.PackageName}}, @{N='installLocation';E={$_.InstallLocation}}, @{N='OnlineProvisioned';E={$true}} ");
             if (noStore)
             {
                 argsBuilder.Append("| Where-Object {$_.Name -NotLike '*Microsoft.WindowsStore*' -and $_.Name -NotLike '*Microsoft.StorePurchaseApp*'}");
             }
-
             argsBuilder.Append("| ConvertTo-Json");
-
             string args = argsBuilder.ToString();
-
             string output = RunPsCommand(args);
             if (output.Length > 0)
             {
