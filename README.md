@@ -2,7 +2,10 @@
 
 An application that wraps PowerShell commands for removing Windows 10 apps.
 
-![Dark mode screenshot](docs/img/w10at-dark.png "Dark mode")
+
+## Screenshots
+
+![Dark mode](https://github.com/mgw-dev/Win10AppTool/blob/master/docs/img/w10at-dark.PNG?raw=true)
 
 
-![Light mode screenshot](docs/img/w10at-light.png "Light mode")
+![Light mode](https://github.com/mgw-dev/Win10AppTool/blob/master/docs/img/w10at-light.PNG?raw=true)
