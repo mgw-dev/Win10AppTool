@@ -43,9 +43,8 @@ namespace Win10AppTool
             {
                 appxViewModel.LoadAppxOnline(cbExclStore.IsChecked == true);
             }
-
             MainAppxView.DataContext = appxViewModel;
-
+            appxViewModel.SortApps();
             tbCount.Text = $"Apps found: {appxViewModel.apps.Count}";
         }
 

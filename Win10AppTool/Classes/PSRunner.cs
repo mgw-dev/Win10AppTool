@@ -65,7 +65,7 @@ namespace Win10AppTool.Classes
             {
                 apps = JsonSerializer.Deserialize<List<Appx>>(output);
             }
-            return apps.OrderBy(x => x.Name);
+            return apps;
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Win10AppTool.Classes
             {
                 apps = JsonSerializer.Deserialize<List<Appx>>(output);
             }
-            return apps.OrderBy(x => x.Name);
+            return apps;
         }
 
         /// <summary>

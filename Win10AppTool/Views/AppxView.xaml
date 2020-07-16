@@ -7,10 +7,10 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
 
-        <ScrollViewer 
-                      VerticalScrollBarVisibility="Auto" 
-                      HorizontalScrollBarVisibility="Hidden" 
-        >
+    <ScrollViewer 
+        VerticalScrollBarVisibility="Auto" 
+        HorizontalScrollBarVisibility="Hidden" 
+    >
         <ItemsControl ItemsSource = "{Binding Path = apps}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

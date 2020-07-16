@@ -23,6 +23,8 @@ namespace Win10AppTool.ViewModel
                 appx.LoadXML();
                 apps.Add(appx);
             }
+
+            SortApps();
         }
 
         public void LoadAppxOnline(bool noStore)
@@ -33,6 +35,14 @@ namespace Win10AppTool.ViewModel
                 appx.LoadXML();
                 apps.Add(appx);
             }
+
+            SortApps();
         }
+
+        public void SortApps()
+        {
+            apps = new ObservableCollection<Appx>(apps.OrderBy(x => x.Name));
+        }
+
     }
 }
