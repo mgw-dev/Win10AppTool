@@ -125,7 +125,7 @@ namespace Win10AppTool.Classes
                     {
                         name = ParseName(name);
                     }
-
+                    
                     if (lPath != null)
                     {
                         int index = lPath.LastIndexOf('\\');
