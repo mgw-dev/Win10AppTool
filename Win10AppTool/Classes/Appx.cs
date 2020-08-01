@@ -129,10 +129,15 @@ namespace Win10AppTool.Classes
                     if (lPath != null)
                     {
                         int index = lPath.LastIndexOf('\\');
-                        string searchPath = $"{installLocation}\\{lPath.Substring(0, index)}";
-                        string searchPattern = lPath.Substring(index + 1).Replace(".", "*.");
-                        string imgPath = Directory.GetFiles(searchPath, searchPattern)[0];
-                        img.Source = (new ImageSourceConverter()).ConvertFromString(imgPath) as ImageSource;
+                        if (index == -1)
+                        {
+                            img.Source = (new ImageSourceConverter()).ConvertFromString($"{installLocation}\\{lPath}") as ImageSource;
+                        }
+                        else
+                        {
+                            string searchPattern = lPath.Substring(index + 1).Replace(".", "*.");
+                            img.Source = (new ImageSourceConverter()).ConvertFromString(Directory.GetFiles($"{installLocation}\\{lPath.Substring(0, index)}", searchPattern)[0]) as ImageSource;
+                        }
                     }
                     else // No logo found, use placeholder.
                     {
