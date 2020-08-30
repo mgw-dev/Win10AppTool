@@ -43,6 +43,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.3" />
 		<PackageReference Include="ModernWpfUI" Version="0.9.1" />
 	</ItemGroup>
 
@@ -61,7 +62,7 @@
 
 	<ItemGroup>
 		<TrimmerRootAssembly Include="System.Runtime.InteropServices.WindowsRuntime" />
-		<TrimmerRootAssembly Include="System.Text.Json" />
+		<TrimmerRootAssembly Include="Microsoft.Management.Infrastructure" />
 	</ItemGroup>
 
 	<ItemGroup>

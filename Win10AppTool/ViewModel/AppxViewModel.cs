@@ -20,7 +20,7 @@ namespace Win10AppTool.ViewModel
             InitApps();
             foreach (Appx appx in PSRunner.LoadAppx(allUsers, noStore))
             {
-                appx.LoadXML();
+                //appx.LoadXML();
                 apps.Add(appx);
             }
 
@@ -32,7 +32,7 @@ namespace Win10AppTool.ViewModel
             InitApps();
             foreach (Appx appx in PSRunner.LoadAppxOnline(noStore))
             {
-                appx.LoadXML();
+                //appx.LoadXML();
                 apps.Add(appx);
             }
 

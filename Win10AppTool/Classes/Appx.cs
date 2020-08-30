@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -24,7 +23,32 @@ namespace Win10AppTool.Classes
         private bool onlineProvisioned;
         private bool remove;
 
-        [JsonPropertyName("Name")]
+        public Appx()
+        {
+
+        }
+
+        public Appx(PSObject psObject)
+        {
+            // Some error checking
+            string[] props = {"FullName", "Name", "InstallLocation", "OnlineProvisioned" };
+            foreach (string property in props)
+            {
+                if (psObject.Properties.Match(property).Count <= 0)
+                {
+                    throw new Exception($"PSObject is missing {property} property");
+                }
+            }
+
+            FullName = psObject.Properties["FullName"].Value.ToString();
+            Name = psObject.Properties["Name"].Value.ToString();
+            InstallLocation = psObject.Properties["InstallLocation"].Value.ToString();
+            OnlineProvisioned = Convert.ToBoolean(psObject.Properties["OnlineProvisioned"].Value.ToString());
+            Remove = false;
+
+            LoadXML();
+        }
+
         public string Name
         {
             get => OnlineProvisioned ? "(Online) " + name : name;
@@ -35,7 +59,6 @@ namespace Win10AppTool.Classes
             }
         }
 
-        [JsonPropertyName("FullName")]
         public string FullName
         {
             get => fullName;
@@ -46,8 +69,6 @@ namespace Win10AppTool.Classes
             }
         }
 
-
-        [JsonPropertyName("InstallLocation")]
         public string InstallLocation
         {
             get => installLocation;
@@ -67,8 +88,6 @@ namespace Win10AppTool.Classes
                 OnPropertyChanged("Remove");
             }
         }
-
-        [JsonPropertyName("OnlineProvisioned")]
         public bool OnlineProvisioned
         {
             get => onlineProvisioned;
@@ -98,7 +117,7 @@ namespace Win10AppTool.Classes
         /// <summary>
         /// Loads information like more user-readable names and image locations from an app's AppxManifest.xml file.
         /// </summary>
-        public void LoadXML()
+        private void LoadXML()
         {
             img = new Image();
             if (!OnlineProvisioned)
