@@ -10,40 +10,55 @@
         ui:WindowHelper.UseModernWindowStyle="True"
         ui:ThemeManager.IsThemeAware="True"
         Title="Win10AppTool" 
-        Height="514" 
-        Width="800"
+        Height="800" 
+        Width="1000"
         MinHeight="514"
         MinWidth="800"
         Loaded="MainWindow_Loaded">
 
     <Grid Name="gridMain">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MaxWidth="800" MinWidth="200"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="58"/>
+        </Grid.RowDefinitions>
 
-        <TabControl  Grid.Column="0" TabStripPlacement="Top" HorizontalAlignment="Stretch" Margin="12,0,12,0">
-            <TabItem Header="AppxPackage Packages">
-                <views:AppxView x:Name="MainAppxView" Loaded="MainAppxView_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
+        <TabControl Grid.Row="0" TabStripPlacement="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0">
+            <TabItem Header="AppxPackage Apps">
+                <Grid Name="AppxGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MaxWidth="800" MinWidth="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <views:AppxView x:Name="MainAppxView" Margin="12,0,0,0" Loaded="MainAppxView_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
+                    <Button x:Name="btnSelAll" Content="Select All" Height="32" Margin="12,12,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnSelAll_Click" HorizontalAlignment="Left"/>
+                    <Button x:Name="btnInvSel" Content="Invert Selection" Height="32" Margin="12,50,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnInvSel_Click" HorizontalAlignment="Left"/>
+
+                    <CheckBox x:Name="cbExclStore" Content="Exclude Windows Store" Margin="12,90,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true"/>
+                    <CheckBox x:Name="cbAllUsers" Content="All Users" Margin="12,125,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Delete apps for all users."/>
+                    <CheckBox x:Name="cbOnline" Content="Include Online Provisioned Apps" Margin="12,160,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Apps that are downloaded automatically for each new user." />
+
+                </Grid>
             </TabItem>
             <TabItem Header="Win32 Apps" >
-                <views:AppxView x:Name="Win32View" Loaded="Win32View_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
+                <Grid Name="Win32Grid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MaxWidth="800" MinWidth="200"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <views:AppxView x:Name="Win32View"  Margin="12,0,0,0" Loaded="Win32View_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
+                </Grid>
             </TabItem>
         </TabControl>
 
         
 
-        <Button x:Name="btnRefresh" Content="Refresh" Height="32" Margin="12,10,0,0" Click="btnRefresh_Click" VerticalAlignment="Top" Grid.Column="1" Width="120" HorizontalAlignment="Left"/>
-        <Button x:Name="btnSelAll" Content="Select All" Height="32" Margin="12,50,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnSelAll_Click" HorizontalAlignment="Left"/>
-        <Button x:Name="btnInvSel" Content="Invert Selection" Height="32" Margin="12,90,0,0" VerticalAlignment="Top" Grid.Column="1" Width="120" Click="btnInvSel_Click" HorizontalAlignment="Left"/>
+        <!--<Button x:Name="btnRefresh" Content="Refresh" Height="32" Margin="12,10,0,0" Click="btnRefresh_Click" VerticalAlignment="Top" Grid.Column="1" Width="120" HorizontalAlignment="Left"/>-->
 
-        <CheckBox x:Name="cbExclStore" Content="Exclude Windows Store" Margin="12,130,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true"/>
-        <CheckBox x:Name="cbAllUsers" Content="All Users" Margin="12,160,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Delete apps for all users."/>
-        <CheckBox x:Name="cbOnline" Content="Include Online Provisioned Apps" Margin="12,190,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Apps that are downloaded automatically for each new user." />
+        <Button Grid.Row="1" x:Name="btnDel" Content="Delete Selected Apps" Height="32" Margin="0,0,12,12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="1" Width="220" ToolTipService.ShowOnDisabled="True" Click="btnDel_Click"/>
 
-        <Button x:Name="btnDel" Content="Delete Selected Apps" Height="32" Margin="0,0,12,12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="1" Width="220" ToolTipService.ShowOnDisabled="True" Click="btnDel_Click"/>
-
-        <TextBlock x:Name="tbCount" Margin="12,0,0,16" HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="1"/>
+        <TextBlock Grid.Row="1" x:Name="tbCount" Margin="12,0,0,16" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
 
     </Grid>
 </Window>

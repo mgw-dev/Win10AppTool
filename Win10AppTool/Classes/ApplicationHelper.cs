@@ -117,22 +117,48 @@ namespace Win10AppTool.Classes
 
         public static IEnumerable<Win32App> LoadWin32Apps()
         {
+            List<Win32App> output = new List<Win32App>();
+            output.AddRange(LoadAppsFromRegistry(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", RegistryHive.CurrentUser));
+            output.AddRange(LoadAppsFromRegistry(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", RegistryHive.LocalMachine));
+            output.AddRange(LoadAppsFromRegistry(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall", RegistryHive.LocalMachine));
+
+            return output;
+        }
+
+        private static IEnumerable<Win32App> LoadAppsFromRegistry(string registryKey, RegistryHive hive)
+        {
             List<Win32App> apps = new List<Win32App>();
-            string registry_key = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
-            using RegistryKey key = Registry.LocalMachine.OpenSubKey(registry_key);
+            RegistryKey key;
+            switch (hive)
+            {
+                case RegistryHive.CurrentUser:
+                    key = Registry.CurrentUser.OpenSubKey(registryKey);
+                    break;
+                case RegistryHive.LocalMachine:
+                    key = Registry.LocalMachine.OpenSubKey(registryKey);
+                    break;
+
+                case RegistryHive.ClassesRoot:
+                case RegistryHive.Users:
+                case RegistryHive.PerformanceData:
+                case RegistryHive.CurrentConfig:
+                    throw new NotImplementedException();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(hive), hive, null);
+            }
+
             foreach (string subkey_name in key.GetSubKeyNames())
             {
-                using RegistryKey subkey = key.OpenSubKey(subkey_name);
+                using RegistryKey subKey = key.OpenSubKey(subkey_name);
                 Win32App w32App = new Win32App();
-                object displayName = subkey.GetValue("DisplayName");
-                if (displayName != null)
+                if (visible(subKey))
                 {
-                    w32App.Name = displayName.ToString();
+                    w32App.Name = subKey?.GetValue("DisplayName").ToString();
                     w32App.Remove = false;
                     w32App.Img = new Image();
 
-                    Icon icon = new Icon(SystemIcons.Application, 64, 64);
-                    string displayIcon = (subkey.GetValue("DisplayIcon") ?? string.Empty).ToString();
+                    Icon icon = new Icon(SystemIcons.WinLogo, 64, 64);
+                    string displayIcon = (subKey?.GetValue("DisplayIcon") ?? string.Empty).ToString();
                     string exeMatch = Regex.Match(displayIcon ?? string.Empty, @"[A-Z]:.+\.exe", RegexOptions.IgnoreCase).Value;
                     string icoMatch = Regex.Match(displayIcon ?? string.Empty, @"[A-Z]:.+\.ico", RegexOptions.IgnoreCase).Value;
 
@@ -146,17 +172,19 @@ namespace Win10AppTool.Classes
                         icon = new Icon(icoMatch);
                     }
 
-
                     w32App.Img.Source = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-
-
                     apps.Add(w32App);
                 }
             }
-
-
-
             return apps;
+            bool visible(RegistryKey subKey)
+            {
+                string name = (string)subKey.GetValue("DisplayName");
+                string releaseType = (string)subKey.GetValue("ReleaseType");
+                object systemComponent = subKey.GetValue("SystemComponent");
+                string parentName = (string)subKey.GetValue("ParentDisplayName");
+                return !string.IsNullOrEmpty(name) && string.IsNullOrEmpty(releaseType) && string.IsNullOrEmpty(parentName) && (systemComponent == null);
+            }
         }
 
     }

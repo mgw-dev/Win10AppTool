@@ -27,7 +27,7 @@ namespace Win10AppTool.Classes
             set
             {
                 remove = value;
-                OnPropertyChanged("Remove");
+                OnPropertyChanged(nameof(Remove));
             }
         }
 
@@ -37,7 +37,7 @@ namespace Win10AppTool.Classes
             set
             {
                 name = value;
-                OnPropertyChanged("Name");
+                OnPropertyChanged(nameof(Name));
             }
         }
 
@@ -47,7 +47,7 @@ namespace Win10AppTool.Classes
             set
             {
                 img = value;
-                OnPropertyChanged("Img");
+                OnPropertyChanged(nameof(Img));
             }
         }
     }

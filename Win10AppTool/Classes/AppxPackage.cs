@@ -52,7 +52,7 @@ namespace Win10AppTool.Classes
             set
             {
                 fullName = value;
-                OnPropertyChanged("FullName");
+                OnPropertyChanged(nameof(FullName));
             }
         }
 
@@ -62,7 +62,7 @@ namespace Win10AppTool.Classes
             set
             {
                 installLocation = value;
-                OnPropertyChanged("InstallLocation");
+                OnPropertyChanged(nameof(InstallLocation));
             }
         }
 
@@ -73,7 +73,7 @@ namespace Win10AppTool.Classes
             set
             {
                 onlineProvisioned = value;
-                OnPropertyChanged("OnlineProvisioned");
+                OnPropertyChanged(nameof(OnlineProvisioned));
             }
         }
 
