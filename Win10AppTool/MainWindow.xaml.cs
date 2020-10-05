@@ -22,16 +22,17 @@ namespace Win10AppTool
         }
 
         private AppxViewModel appxViewModel;
+        private Win32AppViewModel win32AppViewModel;
 
         private void MainAppxView_Loaded(object sender, RoutedEventArgs e)
         {
-            AdminCheck();
-            LoadApps();
+            
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
+            AdminCheck();
+            LoadApps();
         }
 
 
@@ -45,7 +46,14 @@ namespace Win10AppTool
             }
             MainAppxView.DataContext = appxViewModel;
             appxViewModel.SortApps();
-            tbCount.Text = $"Apps found: {appxViewModel.apps.Count}";
+
+
+            win32AppViewModel = new Win32AppViewModel();
+            win32AppViewModel.LoadWin32();
+            Win32View.DataContext = win32AppViewModel;
+            win32AppViewModel.SortApps();
+
+            tbCount.Text = $"Apps found: {appxViewModel.apps.Count + win32AppViewModel.apps.Count}";
         }
 
         private void btnRefresh_Click(object sender, RoutedEventArgs e)
@@ -55,8 +63,7 @@ namespace Win10AppTool
 
         private void btnSelAll_Click(object sender, RoutedEventArgs e)
         {
-            if (appxViewModel == null) return;
-            foreach (Appx app in appxViewModel.apps)
+            foreach (AppxPackage app in appxViewModel.apps)
             {
                 app.Remove = true;
             }
@@ -64,8 +71,7 @@ namespace Win10AppTool
 
         private void btnInvSel_Click(object sender, RoutedEventArgs e)
         {
-            if (appxViewModel == null) return;
-            foreach (Appx app in appxViewModel.apps)
+            foreach (AppxPackage app in appxViewModel.apps) 
             {
                 app.Remove = !app.Remove;
             }
@@ -83,7 +89,7 @@ namespace Win10AppTool
             ContentDialogResult result = await cd.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                PSRunner.RemoveAppx(appxViewModel.apps);
+                await ApplicationHelper.RemoveAppx(appxViewModel.apps);
                 LoadApps();
             }
         }
@@ -106,6 +112,12 @@ namespace Win10AppTool
                     cont.ToolTip = "You must run this program with administrator privileges to use this feature.";
                 }
             }
+        }
+
+        private void Win32View_Loaded(object sender, RoutedEventArgs e)
+        {
+           
+
         }
     }
 }

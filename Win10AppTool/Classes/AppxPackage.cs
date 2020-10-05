@@ -14,21 +14,18 @@ using System.Xml.Linq;
 
 namespace Win10AppTool.Classes
 {
-    public class Appx : INotifyPropertyChanged
+    public class AppxPackage : WindowsApp
     {
-        private string name;
         private string fullName;
         private string installLocation;
-        private Image img;
         private bool onlineProvisioned;
-        private bool remove;
 
-        public Appx()
+        public AppxPackage()
         {
 
         }
 
-        public Appx(PSObject psObject)
+        public AppxPackage(PSObject psObject)
         {
             // Some error checking
             string[] props = {"FullName", "Name", "InstallLocation", "OnlineProvisioned" };
@@ -47,16 +44,6 @@ namespace Win10AppTool.Classes
             Remove = false;
 
             LoadXML();
-        }
-
-        public string Name
-        {
-            get => OnlineProvisioned ? "(Online) " + name : name;
-            set
-            {
-                name = value;
-                OnPropertyChanged("Name");
-            }
         }
 
         public string FullName
@@ -79,15 +66,7 @@ namespace Win10AppTool.Classes
             }
         }
 
-        public bool Remove
-        {
-            get => remove;
-            set
-            {
-                remove = value;
-                OnPropertyChanged("Remove");
-            }
-        }
+
         public bool OnlineProvisioned
         {
             get => onlineProvisioned;
@@ -96,22 +75,6 @@ namespace Win10AppTool.Classes
                 onlineProvisioned = value;
                 OnPropertyChanged("OnlineProvisioned");
             }
-        }
-
-        public Image Img
-        {
-            get => img;
-            set
-            {
-                img = value;
-                OnPropertyChanged("Img");
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>

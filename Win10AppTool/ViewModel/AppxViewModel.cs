@@ -8,19 +8,21 @@ namespace Win10AppTool.ViewModel
 {
     public class AppxViewModel
     {
-        public ObservableCollection<Appx> apps { get; set; }
-
-        private void InitApps()
+        public ObservableCollection<AppxPackage> apps { get; set; }
+        protected void InitApps()
         {
-            apps ??= new ObservableCollection<Appx>();
+            apps ??= new ObservableCollection<AppxPackage>();
         }
 
+        public void SortApps()
+        {
+            apps = new ObservableCollection<AppxPackage>(apps.OrderBy(x => x.Name));
+        }
         public void LoadAppx(bool allUsers, bool noStore)
         {
             InitApps();
-            foreach (Appx appx in PSRunner.LoadAppx(allUsers, noStore))
+            foreach (AppxPackage appx in ApplicationHelper.LoadAppx(allUsers, noStore))
             {
-                //appx.LoadXML();
                 apps.Add(appx);
             }
 
@@ -30,19 +32,11 @@ namespace Win10AppTool.ViewModel
         public void LoadAppxOnline(bool noStore)
         {
             InitApps();
-            foreach (Appx appx in PSRunner.LoadAppxOnline(noStore))
+            foreach (AppxPackage appx in ApplicationHelper.LoadAppxOnline(noStore))
             {
-                //appx.LoadXML();
                 apps.Add(appx);
             }
-
             SortApps();
         }
-
-        public void SortApps()
-        {
-            apps = new ObservableCollection<Appx>(apps.OrderBy(x => x.Name));
-        }
-
     }
 }
