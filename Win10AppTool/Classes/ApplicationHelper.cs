@@ -165,14 +165,11 @@ namespace Win10AppTool.Classes
                     if (!string.IsNullOrEmpty(exeMatch))
                     {
                         icon = Icon.ExtractAssociatedIcon(exeMatch);
-                    } 
-                    else if (!string.IsNullOrEmpty(icoMatch))
+                    }
+
+                    if (!string.IsNullOrEmpty(icoMatch))
                     {
                         icon = new Icon(icoMatch);
-                    }
-                    else
-                    {
-                        
                     }
 
                     w32App.Img.Source = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
