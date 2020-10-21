@@ -23,15 +23,15 @@
             <RowDefinition Height="58"/>
         </Grid.RowDefinitions>
 
-        <TabControl Grid.Row="0" TabStripPlacement="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0">
-            <TabItem Header="AppxPackage Apps">
+        <TabControl Grid.Row="0" TabStripPlacement="Top" HorizontalAlignment="Stretch" Margin="0,0,0,0" >
+            <TabItem x:Name="AppxTab" Header="{Binding AppxHeaderText}">
                 <Grid x:Name="AppxGrid">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MaxWidth="800" MinWidth="200"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <views:AppxView x:Name="MainAppxView" Margin="12,0,0,0" Loaded="MainAppxView_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
+                    <views:AppxView x:Name="MainAppxView" Margin="12,0,0,0" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
 
                     <CheckBox x:Name="cbExclStore" Content="Exclude Windows Store" Margin="12,12,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" Click="LoadApps"/>
                     <CheckBox x:Name="cbAllUsers" Content="All Users" Margin="12,47,0,0" VerticalAlignment="Top" Grid.Column="1" IsChecked="true" ToolTipService.ShowOnDisabled="True" ToolTip="Delete apps for all users." Click="LoadApps"/>
@@ -39,12 +39,13 @@
 
                 </Grid>
             </TabItem>
-            <TabItem Header="Win32 Apps" >
+            <TabItem x:Name="Win32Tab" Header="{Binding Win32HeaderText}" >
                 <views:AppxView x:Name="Win32View"  Margin="12,0,0,0" Loaded="Win32View_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
             </TabItem>
         </TabControl>
 
         <Button Grid.Row="1" x:Name="btnDel" Content="{Binding DelText}" Height="32" Margin="0,0,12,12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="1" Width="220" ToolTipService.ShowOnDisabled="True" Click="btnDel_Click"/>
+        <Button Grid.Row="1" x:Name="btnClear" Content="Clear Selection" Height="32" Margin="0,0,240,12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="120" Click="btnClear_Click"/>
 
         <TextBlock Grid.Row="1" x:Name="tbCount" Margin="12,0,0,16" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
 

@@ -13,7 +13,7 @@ namespace Win10AppTool.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
         protected void InitApps()
         {
-            apps ??= new ObservableCollection<AppxPackage>();
+            apps = new ObservableCollection<AppxPackage>();
         }
 
         public void SortApps()
@@ -23,10 +23,10 @@ namespace Win10AppTool.ViewModel
         public void LoadAppx(bool allUsers, bool noStore)
         {
             InitApps();
-            foreach (AppxPackage appx in ApplicationHelper.LoadAppx(allUsers, noStore))
+            foreach (AppxPackage application in ApplicationHelper.LoadAppx(allUsers, noStore))
             {
-                apps.Add(appx);
-                appx.PropertyChanged += Appx_PropertyChanged;
+                apps.Add(application);
+                application.PropertyChanged += Appx_PropertyChanged;
             }
 
             SortApps();
@@ -35,10 +35,10 @@ namespace Win10AppTool.ViewModel
         public void LoadAppxOnline(bool noStore)
         {
             InitApps();
-            foreach (AppxPackage appx in ApplicationHelper.LoadAppxOnline(noStore))
+            foreach (AppxPackage application in ApplicationHelper.LoadAppxOnline(noStore))
             {
-                apps.Add(appx);
-                appx.PropertyChanged += Appx_PropertyChanged;
+                apps.Add(application);
+                application.PropertyChanged += Appx_PropertyChanged;
             }
             SortApps();
         }
