@@ -1,8 +1,13 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Principal;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using ModernWpf.Controls;
+using Win10AppTool.Annotations;
 using Win10AppTool.Classes;
 using Win10AppTool.ViewModel;
 
@@ -12,13 +17,24 @@ namespace Win10AppTool
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private string delText = "Delete Apps";
 
+        public string DelText
+        {
+            get => delText;
+            set
+            {
+                delText = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
         }
 
         private AppxViewModel appxViewModel;
@@ -36,7 +52,7 @@ namespace Win10AppTool
         }
 
 
-        private void LoadApps()
+        private void LoadApps(object sender = null, RoutedEventArgs e = null)
         {
             appxViewModel = new AppxViewModel();
             appxViewModel.LoadAppx(cbAllUsers.IsChecked == true, cbExclStore.IsChecked == true);
@@ -46,35 +62,27 @@ namespace Win10AppTool
             }
             MainAppxView.DataContext = appxViewModel;
             appxViewModel.SortApps();
-
-
+            
             win32AppViewModel = new Win32AppViewModel();
             win32AppViewModel.LoadWin32();
             Win32View.DataContext = win32AppViewModel;
             win32AppViewModel.SortApps();
 
             tbCount.Text = $"Apps found: {appxViewModel.apps.Count + win32AppViewModel.apps.Count}";
+     
+            appxViewModel.PropertyChanged += ViewModel_PropertyChanged;
+            win32AppViewModel.PropertyChanged += ViewModel_PropertyChanged;
         }
 
-        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            LoadApps();
+            SetDelButtonText();
         }
 
-        private void btnSelAll_Click(object sender, RoutedEventArgs e)
+        private void SetDelButtonText()
         {
-            foreach (AppxPackage app in appxViewModel.apps)
-            {
-                app.Remove = true;
-            }
-        }
-
-        private void btnInvSel_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (AppxPackage app in appxViewModel.apps) 
-            {
-                app.Remove = !app.Remove;
-            }
+            int selectedCount = appxViewModel.apps.AsEnumerable().Count(app => app.Remove) + win32AppViewModel.apps.AsEnumerable().Count(app => app.Remove);
+            DelText = $"Delete {(selectedCount == 0 ? string.Empty : selectedCount + " ")}App{(selectedCount == 1 ? string.Empty : "s")}";
         }
 
         private async void btnDel_Click(object sender, RoutedEventArgs e)
@@ -118,6 +126,14 @@ namespace Win10AppTool
         {
            
 
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

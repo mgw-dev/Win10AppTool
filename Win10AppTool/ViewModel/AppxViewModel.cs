@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using Win10AppTool.Classes;
 
@@ -9,6 +10,7 @@ namespace Win10AppTool.ViewModel
     public class AppxViewModel
     {
         public ObservableCollection<AppxPackage> apps { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
         protected void InitApps()
         {
             apps ??= new ObservableCollection<AppxPackage>();
@@ -24,6 +26,7 @@ namespace Win10AppTool.ViewModel
             foreach (AppxPackage appx in ApplicationHelper.LoadAppx(allUsers, noStore))
             {
                 apps.Add(appx);
+                appx.PropertyChanged += Appx_PropertyChanged;
             }
 
             SortApps();
@@ -35,8 +38,15 @@ namespace Win10AppTool.ViewModel
             foreach (AppxPackage appx in ApplicationHelper.LoadAppxOnline(noStore))
             {
                 apps.Add(appx);
+                appx.PropertyChanged += Appx_PropertyChanged;
             }
             SortApps();
         }
+
+        private void Appx_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            PropertyChanged?.Invoke(sender, e);
+        }
+
     }
 }
