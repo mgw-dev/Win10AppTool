@@ -40,7 +40,7 @@
                 </Grid>
             </TabItem>
             <TabItem x:Name="Win32Tab" Header="{Binding Win32HeaderText}" >
-                <views:AppxView x:Name="Win32View"  Margin="12,0,0,0" Loaded="Win32View_Loaded" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
+                <views:AppxView x:Name="Win32View"  Margin="12,0,0,0" VerticalAlignment="Top" ScrollViewer.CanContentScroll="True" />
             </TabItem>
         </TabControl>
 

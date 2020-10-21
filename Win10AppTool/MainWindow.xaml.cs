@@ -120,6 +120,7 @@ namespace Win10AppTool
             if (result == ContentDialogResult.Primary)
             {
                 await ApplicationHelper.RemoveAppx(appxViewModel.apps.Where(x => x.Remove).ToList());
+                await ApplicationHelper.RemoveWin32(win32AppViewModel.apps.Where(x => x.Remove).ToList());
                 LoadApps();
             }
         }
@@ -142,12 +143,6 @@ namespace Win10AppTool
                     cont.ToolTip = "You must run this program with administrator privileges to use this feature.";
                 }
             }
-        }
-
-        private void Win32View_Loaded(object sender, RoutedEventArgs e)
-        {
-
-
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)

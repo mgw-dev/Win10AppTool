@@ -87,7 +87,6 @@ namespace Win10AppTool.Classes
         }
         #endregion
 
-
         /// <summary>
         /// Determine what PowerShell command to use
         /// </summary>
@@ -100,6 +99,15 @@ namespace Win10AppTool.Classes
                 (false, _) => "",
                 (true, true) => $"Remove-AppxProvisionedPackage {app.FullName} -Online",
                 (true, false) => $"Remove-AppxPackage {app.FullName}"
+            };
+
+        private static string GetRemovalCommand(Win32App app) =>
+            (app.Remove, string.IsNullOrEmpty(app.QuietUninstallString), string.IsNullOrEmpty(app.UninstallString)) switch
+            {
+                (false, _, _) => string.Empty,
+                (true, false, _) => app.QuietUninstallString,
+                (true, true, false) => app.UninstallString,
+                (true, true, true) => "!!!"
             };
 
         /// <summary>
@@ -147,15 +155,18 @@ namespace Win10AppTool.Classes
                     throw new ArgumentOutOfRangeException(nameof(hive), hive, null);
             }
 
-            foreach (string subkey_name in key.GetSubKeyNames())
+            foreach (string subkeyName in key.GetSubKeyNames())
             {
-                using RegistryKey subKey = key.OpenSubKey(subkey_name);
+                using RegistryKey subKey = key.OpenSubKey(subkeyName);
                 Win32App w32App = new Win32App();
                 if (visible(subKey))
                 {
                     w32App.Name = subKey?.GetValue("DisplayName").ToString();
                     w32App.Remove = false;
                     w32App.Img = new Image();
+
+                    w32App.UninstallString = subKey?.GetValue("UninstallString")?.ToString();
+                    w32App.QuietUninstallString = subKey?.GetValue("QuietUninstallString")?.ToString();
 
                     Icon icon = new Icon(SystemIcons.WinLogo, 64, 64);
                     string displayIcon = (subKey?.GetValue("DisplayIcon") ?? string.Empty).ToString();
@@ -185,6 +196,29 @@ namespace Win10AppTool.Classes
                 string parentName = (string)subKey.GetValue("ParentDisplayName");
                 return !string.IsNullOrEmpty(name) && string.IsNullOrEmpty(releaseType) && string.IsNullOrEmpty(parentName) && (systemComponent == null);
             }
+        }
+
+        public static async Task RemoveWin32(IEnumerable<Win32App> apps)
+        {
+            await Task.Run(() =>
+            {
+                foreach (Win32App app in apps)
+                {
+                    string c = GetRemovalCommand(app);
+                    if (!string.IsNullOrEmpty(c))
+                    {
+                        if (c == "!!!")
+                        {
+
+                        }
+                        else
+                        {
+                            Debug.WriteLine(c);
+                        }
+                        //RunPsCommand(c);
+                    }
+                }
+            });
         }
 
     }
