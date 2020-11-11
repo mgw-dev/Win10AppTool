@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<TargetFramework>net5.0-windows10.0.18362</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<Configurations>Debug;Release</Configurations>
 		<Platforms>AnyCPU;x64;x86</Platforms>
@@ -43,8 +43,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.0.3" />
-		<PackageReference Include="ModernWpfUI" Version="0.9.1" />
+		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.1.0-rc.2" />
+		<PackageReference Include="ModernWpfUI" Version="0.9.3-preview.201004.0" />
+		<PackageReference Include="System.Drawing.Common" Version="5.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

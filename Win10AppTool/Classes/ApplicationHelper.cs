@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Management.Automation;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,6 +19,9 @@ using System.Windows.Media.Imaging;
 using System.Xml;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Win32;
+using Namotion.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Image = System.Windows.Controls.Image;
 
 namespace Win10AppTool.Classes
@@ -120,6 +124,33 @@ namespace Win10AppTool.Classes
             PowerShell ps = PowerShell.Create();
             ps.AddScript(command);
             Collection<PSObject> output = ps.Invoke();
+
+            // Gross hacky workaround because "Get-AppxPackage" was returning nothing after moving to .net 5
+            if (command.StartsWith("Get-AppxPackage") && output.Count == 0)
+            {
+                string strCmdText = $"{command} | ConvertTo-Json";
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                startInfo.CreateNoWindow = true;
+                startInfo.FileName = "powershell.exe";
+                startInfo.RedirectStandardOutput = true;
+                startInfo.Arguments = strCmdText;
+                process.StartInfo = startInfo;
+                process.Start();
+                string jsonOut = process.StandardOutput.ReadToEnd().Replace("\r\n", "");
+                foreach (JToken jt in JArray.Parse(jsonOut))
+                {
+                    PSObject pso = new PSObject();
+                    pso.Properties.Add(new PSVariableProperty(new PSVariable("FullName", jt["FullName"])));
+                    pso.Properties.Add(new PSVariableProperty(new PSVariable("Name", jt["Name"])));
+                    pso.Properties.Add(new PSVariableProperty(new PSVariable("InstallLocation", jt["InstallLocation"])));
+                    pso.Properties.Add(new PSVariableProperty(new PSVariable("OnlineProvisioned", (bool)jt["OnlineProvisioned"])));
+                    output.Add(pso);
+                }
+
+            }
+
             return output;
         }
 
