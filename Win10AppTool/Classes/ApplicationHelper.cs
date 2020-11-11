@@ -6,22 +6,18 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
-using System.Management.Automation;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+//using System.Management.Automation;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Win32;
-using Namotion.Reflection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Image = System.Windows.Controls.Image;
 
 namespace Win10AppTool.Classes
@@ -44,7 +40,7 @@ namespace Win10AppTool.Classes
                     string c = GetRemovalCommand(app);
                     if (!string.IsNullOrEmpty(c))
                     {
-                        RunPsCommand(c);
+                       // RunPsCommand(c);
                     }
                 }
             });
@@ -70,7 +66,8 @@ namespace Win10AppTool.Classes
                 argsBuilder.Append("| Where-Object {$_.Name -NotLike '*Microsoft.WindowsStore*' -and $_.Name -NotLike '*Microsoft.StorePurchaseApp*'}");
             }
 
-            return RunPsCommand(argsBuilder.ToString()).Select(obj => new AppxPackage(obj)).ToList();
+            //return RunPsCommand(argsBuilder.ToString()).Select(obj => new AppxPackage(obj)).ToList();
+            return LoadAppxWithPowershell(argsBuilder.ToString());
         }
 
         /// <summary>
@@ -87,8 +84,34 @@ namespace Win10AppTool.Classes
                 argsBuilder.Append("| Where-Object {$_.Name -NotLike '*Microsoft.WindowsStore*' -and $_.Name -NotLike '*Microsoft.StorePurchaseApp*'}");
             }
 
-            return RunPsCommand(argsBuilder.ToString()).Select(obj => new AppxPackage(obj)).ToList();
+            //return RunPsCommand(argsBuilder.ToString()).Select(obj => new AppxPackage(obj)).ToList();
+            return LoadAppxWithPowershell(argsBuilder.ToString());
         }
+
+        /// <summary>
+        /// Hacky workaround because "Get-AppxPackage" was returning nothing after moving to .net 5
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private static IEnumerable<AppxPackage> LoadAppxWithPowershell(string command)
+        {
+            string strCmdText = $"{command} | ConvertTo-Json";
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                FileName = "powershell.exe",
+                RedirectStandardOutput = true,
+                Arguments = strCmdText
+            };
+            process.StartInfo = startInfo;
+            process.Start();
+            string jsonOut = process.StandardOutput.ReadToEnd().Replace("\r\n", "");
+            return JsonConvert.DeserializeObject<List<AppxPackage>>(jsonOut);
+        }
+
+
         #endregion
 
         /// <summary>
@@ -119,40 +142,13 @@ namespace Win10AppTool.Classes
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        private static Collection<PSObject> RunPsCommand(string command)
-        {
-            PowerShell ps = PowerShell.Create();
-            ps.AddScript(command);
-            Collection<PSObject> output = ps.Invoke();
-
-            // Gross hacky workaround because "Get-AppxPackage" was returning nothing after moving to .net 5
-            if (command.StartsWith("Get-AppxPackage") && output.Count == 0)
-            {
-                string strCmdText = $"{command} | ConvertTo-Json";
-                Process process = new Process();
-                ProcessStartInfo startInfo = new ProcessStartInfo();
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.CreateNoWindow = true;
-                startInfo.FileName = "powershell.exe";
-                startInfo.RedirectStandardOutput = true;
-                startInfo.Arguments = strCmdText;
-                process.StartInfo = startInfo;
-                process.Start();
-                string jsonOut = process.StandardOutput.ReadToEnd().Replace("\r\n", "");
-                foreach (JToken jt in JArray.Parse(jsonOut))
-                {
-                    PSObject pso = new PSObject();
-                    pso.Properties.Add(new PSVariableProperty(new PSVariable("FullName", jt["FullName"])));
-                    pso.Properties.Add(new PSVariableProperty(new PSVariable("Name", jt["Name"])));
-                    pso.Properties.Add(new PSVariableProperty(new PSVariable("InstallLocation", jt["InstallLocation"])));
-                    pso.Properties.Add(new PSVariableProperty(new PSVariable("OnlineProvisioned", (bool)jt["OnlineProvisioned"])));
-                    output.Add(pso);
-                }
-
-            }
-
-            return output;
-        }
+        //private static Collection<PSObject> RunPsCommand(string command)
+        //{
+        //    PowerShell ps = PowerShell.Create();
+        //    ps.AddScript(command);
+        //    Collection<PSObject> output = ps.Invoke();
+        //    return output;
+        //}
 
         public static IEnumerable<Win32App> LoadWin32Apps()
         {

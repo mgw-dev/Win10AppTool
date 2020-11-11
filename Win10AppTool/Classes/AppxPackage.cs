@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Management.Automation;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.IO;
+using System.Runtime.Serialization;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace Win10AppTool.Classes
 {
@@ -22,29 +14,29 @@ namespace Win10AppTool.Classes
 
         public AppxPackage()
         {
-
-        }
-
-        public AppxPackage(PSObject psObject)
-        {
-            // Some error checking
-            string[] props = {"FullName", "Name", "InstallLocation", "OnlineProvisioned" };
-            foreach (string property in props)
-            {
-                if (psObject.Properties.Match(property).Count <= 0)
-                {
-                    throw new Exception($"PSObject is missing {property} property");
-                }
-            }
-
-            FullName = psObject.Properties["FullName"].Value.ToString();
-            Name = psObject.Properties["Name"].Value.ToString();
-            InstallLocation = psObject.Properties["InstallLocation"].Value.ToString();
-            OnlineProvisioned = Convert.ToBoolean(psObject.Properties["OnlineProvisioned"].Value.ToString());
-            Remove = false;
-
             LoadXML();
         }
+
+        //public AppxPackage(PSObject psObject)
+        //{
+        //    // Some error checking
+        //    string[] props = {"FullName", "Name", "InstallLocation", "OnlineProvisioned" };
+        //    foreach (string property in props)
+        //    {
+        //        if (psObject.Properties.Match(property).Count <= 0)
+        //        {
+        //            throw new Exception($"PSObject is missing {property} property");
+        //        }
+        //    }
+
+        //    FullName = psObject.Properties["FullName"].Value.ToString();
+        //    Name = psObject.Properties["Name"].Value.ToString();
+        //    InstallLocation = psObject.Properties["InstallLocation"].Value.ToString();
+        //    OnlineProvisioned = Convert.ToBoolean(psObject.Properties["OnlineProvisioned"].Value.ToString());
+        //    Remove = false;
+
+        //    LoadXML();
+        //}
 
         public string FullName
         {
@@ -141,5 +133,10 @@ namespace Win10AppTool.Classes
             return newName;
         }
 
+        [OnDeserialized]
+        internal void OnDeserializedMethod(StreamingContext context)
+        {
+            LoadXML();
+        }
     }
 }
