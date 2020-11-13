@@ -8,7 +8,7 @@ using Win10AppTool.Annotations;
 
 namespace Win10AppTool.Classes
 {
-    public class WindowsApp : INotifyPropertyChanged
+    public abstract class WindowsApp : INotifyPropertyChanged
     {
         protected string name;
         protected Image img;
@@ -50,5 +50,7 @@ namespace Win10AppTool.Classes
                 OnPropertyChanged(nameof(Img));
             }
         }
+
+        public abstract bool Uninstall();
     }
 }

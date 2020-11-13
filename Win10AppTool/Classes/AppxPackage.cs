@@ -138,5 +138,18 @@ namespace Win10AppTool.Classes
         {
             LoadXML();
         }
+
+        public override bool Uninstall()
+        {
+            if (remove)
+            {
+                ApplicationHelper.RunPsCommand(OnlineProvisioned
+                    ? $"Remove-AppxProvisionedPackage {fullName} -Online"
+                    : $"Remove-AppxPackage {fullName}");
+
+                return true;
+            }
+            return false;
+        }
     }
 }

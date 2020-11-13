@@ -10,7 +10,6 @@ namespace Win10AppTool.Classes
     public class Win32App : WindowsApp
     {
         private string uninstallString;
-        private string quietUninstallString;
 
         public Win32App()
         {
@@ -26,16 +25,11 @@ namespace Win10AppTool.Classes
             }
         }
 
-        public string QuietUninstallString
+        public override bool Uninstall()
         {
-            get => quietUninstallString;
-            set
-            {
-                quietUninstallString = value;
-                OnPropertyChanged(nameof(QuietUninstallString));
-            }
+            //TODO: this
+            throw new NotImplementedException();
+            return false;
         }
     }
-
-    
 }
