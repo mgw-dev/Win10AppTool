@@ -3,20 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 //using System.Management.Automation;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml;
 using Microsoft.Win32;
 using Image = System.Windows.Controls.Image;
 
@@ -66,8 +60,7 @@ namespace Win10AppTool.Classes
                 argsBuilder.Append("| Where-Object {$_.Name -NotLike '*Microsoft.WindowsStore*' -and $_.Name -NotLike '*Microsoft.StorePurchaseApp*'}");
             }
 
-            //return RunPsCommand(argsBuilder.ToString()).Select(obj => new AppxPackage(obj)).ToList();
-            return LoadAppxWithPowershell(argsBuilder.ToString());
+            return RunPsCommand<List<AppxPackage>>(argsBuilder.ToString());
         }
 
         /// <summary>
@@ -84,18 +77,20 @@ namespace Win10AppTool.Classes
                 argsBuilder.Append("| Where-Object {$_.Name -NotLike '*Microsoft.WindowsStore*' -and $_.Name -NotLike '*Microsoft.StorePurchaseApp*'}");
             }
 
-            //return RunPsCommand(argsBuilder.ToString()).Select(obj => new AppxPackage(obj)).ToList();
-            return LoadAppxWithPowershell(argsBuilder.ToString());
+            return RunPsCommand<List<AppxPackage>>(argsBuilder.ToString());
         }
 
+        #endregion
+
         /// <summary>
-        /// Hacky workaround because "Get-AppxPackage" was returning nothing after moving to .net 5
+        /// Hacky workaround for running powershell commands.
+        /// Using the actual powershell SDK, "Get-AppxPackage" was returning nothing after moving to .net 5.
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        private static IEnumerable<AppxPackage> LoadAppxWithPowershell(string command)
+        private static T RunPsCommand<T>(string command)
         {
-            string strCmdText = $"{command} | ConvertTo-Json";
+            string strCmdText = command.EndsWith("| ConvertTo-Json") ? command : $"{command} | ConvertTo-Json";
             Process process = new Process();
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
@@ -107,12 +102,27 @@ namespace Win10AppTool.Classes
             };
             process.StartInfo = startInfo;
             process.Start();
+
             string jsonOut = process.StandardOutput.ReadToEnd().Replace("\r\n", "");
-            return JsonConvert.DeserializeObject<List<AppxPackage>>(jsonOut);
+            T output;
+
+            try
+            {
+                output = JsonConvert.DeserializeObject<T>(jsonOut);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            return output;
         }
 
-
-        #endregion
+        private static void RunPsCommand(string command)
+        {
+            RunPsCommand<object>(command);
+        }
 
         /// <summary>
         /// Determine what PowerShell command to use
@@ -136,7 +146,7 @@ namespace Win10AppTool.Classes
                 (true, true, false) => app.UninstallString,
                 (true, true, true) => "!!!"
             };
-
+        
         /// <summary>
         /// Runs a PowerShell command. 
         /// </summary>
