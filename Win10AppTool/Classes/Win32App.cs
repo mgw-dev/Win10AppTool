@@ -25,7 +25,7 @@ namespace Win10AppTool.Classes
             }
         }
 
-        public override bool Uninstall()
+        public bool Uninstall(bool allUsers)
         {
             //TODO: this
             throw new NotImplementedException();

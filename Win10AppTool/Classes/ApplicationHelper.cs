@@ -25,7 +25,7 @@ namespace Win10AppTool.Classes
         /// </summary>
         /// <param name="apps">Collection of packages to remove</param>
         /// <param name="allUsers">Remove for all users</param>
-        public static async Task RemoveAppx(IEnumerable<AppxPackage> apps)
+        public static async Task RemoveAppx(IEnumerable<AppxPackage> apps, bool? allUsers = true)
         {
             await Task.Run(() =>
             {
@@ -33,7 +33,15 @@ namespace Win10AppTool.Classes
                 {
                     if (app.Remove)
                     {
-                        app.Uninstall();
+                        if (app.Uninstall(allUsers, out string output))
+                        {
+
+                        }
+                        else
+                        {
+
+                        }
+
                     }
                 }
             });
@@ -87,7 +95,7 @@ namespace Win10AppTool.Classes
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        private static T RunPsCommand<T>(string command)
+        private static T RunPsCommand<T>(string command, out string output)
         {
             string strCmdText = command.EndsWith("| ConvertTo-Json") ? command : $"{command} | ConvertTo-Json";
             Process process = new Process();
@@ -102,25 +110,29 @@ namespace Win10AppTool.Classes
             process.StartInfo = startInfo;
             process.Start();
 
-            string jsonOut = process.StandardOutput.ReadToEnd().Replace("\r\n", "");
-            T output;
-
+            output = process.StandardOutput.ReadToEnd().Replace("\r\n", "");
+            T convertedOut = default;
             try
             {
-                output = JsonConvert.DeserializeObject<T>(jsonOut);
+                convertedOut = JsonConvert.DeserializeObject<T>(output);
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
-                throw;
+                Console.WriteLine(e);
             }
 
-            return output;
+            return convertedOut;
         }
 
-        public static void RunPsCommand(string command)
+        private static T RunPsCommand<T>(string command)
         {
-            RunPsCommand<object>(command);
+            return RunPsCommand<T>(command, out _);
+        }
+
+        public static string RunPsCommand(string command)
+        {
+            RunPsCommand<object>(command, out string output);
+            return output;
         }
 
         /// <summary>
@@ -223,7 +235,7 @@ namespace Win10AppTool.Classes
                 {
                     if (app.Remove)
                     {
-                        app.Uninstall();
+                        app.Uninstall(false);
                     }
                 }
             });

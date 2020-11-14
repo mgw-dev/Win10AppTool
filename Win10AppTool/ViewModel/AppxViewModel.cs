@@ -13,7 +13,7 @@ namespace Win10AppTool.ViewModel
         public event PropertyChangedEventHandler PropertyChanged;
         protected void InitApps()
         {
-            apps = new ObservableCollection<AppxPackage>();
+            apps ??= new ObservableCollection<AppxPackage>();
         }
 
         public void SortApps()

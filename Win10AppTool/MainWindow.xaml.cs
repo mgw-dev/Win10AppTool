@@ -22,6 +22,7 @@ namespace Win10AppTool
         private string delText = "Delete Apps";
         private string appxHeaderText = "AppxPackage Apps";
         private string win32HeaderText = "Win32 Apps";
+        private int selectedCount = 0;
 
         public string DelText
         {
@@ -100,7 +101,7 @@ namespace Win10AppTool
         {
             int appxCount = appxViewModel.apps.AsEnumerable().Count(app => app.Remove);
             int w32Count = win32AppViewModel.apps.AsEnumerable().Count(app => app.Remove);
-            int selectedCount = appxCount + w32Count;
+            selectedCount = appxCount + w32Count;
             DelText = $"Delete {(selectedCount == 0 ? string.Empty : selectedCount + " ")}App{(selectedCount == 1 ? string.Empty : "s")}";
 
             AppxHeaderText = $"AppxPackage Apps: ({appxCount}/{appxViewModel.apps.Count} selected)";
@@ -112,14 +113,14 @@ namespace Win10AppTool
             ContentDialog cd = new ContentDialog
             {
                 Title = "Warning!",
-                Content = "Removing pre-installed applications may cause errors. Are you sure you want to do this?",
+                Content = $"Removing {selectedCount} applications. Are you sure you want to do this?",
                 PrimaryButtonText = "Yes",
                 CloseButtonText = "No"
             };
             ContentDialogResult result = await cd.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                await ApplicationHelper.RemoveAppx(appxViewModel.apps.Where(x => x.Remove).ToList());
+                await ApplicationHelper.RemoveAppx(appxViewModel.apps.Where(x => x.Remove).ToList(), cbAllUsers.IsChecked);
                 await ApplicationHelper.RemoveWin32(win32AppViewModel.apps.Where(x => x.Remove).ToList());
                 LoadApps();
             }

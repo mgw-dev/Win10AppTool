@@ -139,16 +139,21 @@ namespace Win10AppTool.Classes
             LoadXML();
         }
 
-        public override bool Uninstall()
+        public bool Uninstall(bool allUsers, out string output)
         {
             if (remove)
             {
-                ApplicationHelper.RunPsCommand(OnlineProvisioned
-                    ? $"Remove-AppxProvisionedPackage {fullName} -Online"
-                    : $"Remove-AppxPackage {fullName}");
+                string onlineCommand = $"Remove-AppxProvisionedPackage {fullName} -Online";
+                string localCommand = $"Remove-AppxPackage {fullName}{(allUsers? " -AllUsers" : "")}";
 
-                return true;
+                output = ApplicationHelper.RunPsCommand(OnlineProvisioned
+                    ? onlineCommand
+                    : localCommand);
+
+                return !output.Contains("failed");
             }
+
+            output = "ERROR";
             return false;
         }
     }

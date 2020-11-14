@@ -50,7 +50,5 @@ namespace Win10AppTool.Classes
                 OnPropertyChanged(nameof(Img));
             }
         }
-
-        public abstract bool Uninstall();
     }
 }
